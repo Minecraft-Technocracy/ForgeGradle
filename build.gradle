@@ -15,7 +15,6 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-apply plugin: 'maven-publish'
 // it strictly reports license violations within the resource code files, I don't know how to disable this, because
 // disabling strict reporting does not help and I honestly don't care about the license notices.
 //apply plugin: 'license'
@@ -431,22 +430,4 @@ def getGitHash() {
     def process = 'git rev-parse --short HEAD'.execute()
     process.waitFor()
     return '-' + (process.exitValue() ? 'unknown' : process.text.trim())
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/minecraft-technocracy/forgegradle")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("username")
-                password = project.findProperty("gpr.key") ?: System.getenv("password")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            from(components.java)
-        }
-    }
 }
