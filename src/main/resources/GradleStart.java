@@ -74,16 +74,44 @@ public class GradleStart extends GradleStartCommon
         else
             paths += File.pathSeparator + nativesDir;
 
-        System.setProperty("java.library.path", paths);
+        // old hack that was rendered unusable through
+        // http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/rev/1d666f78532a/
+//        System.setProperty("java.library.path", paths);
+//
+//        // hack the classloader now.
+//        try
+//        {
+//            final Field sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
+//            sysPathsField.setAccessible(true);
+//            sysPathsField.set(null, null);
+//        }
+//        catch(Throwable t) {};
 
-        // hack the classloader now.
-        try
-        {
-            final Field sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
-            sysPathsField.setAccessible(true);
-            sysPathsField.set(null, null);
+        // replacement hack:
+        try {
+            final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
+            usrPathsField.setAccessible(true);
+
+            //get array of paths
+            final String[] paths = (String[])usrPathsField.get(null);
+
+            //check if the path to add is already present
+            for(String path : paths) {
+                if(path.equals(pathToAdd)) {
+                    return;
+                }
+            }
+
+            //add the new path
+            final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
+            newPaths[newPaths.length-1] = pathToAdd;
+            usrPathsField.set(null, newPaths);
+        } catch (Throwable t) {
+            System.err.println("Error hacking the classloader. Loading platform libraries might not work.");
+            System.err.println("See \"https://stackoverflow.com/questions/15409223/adding-new-paths-for-native" +
+                    "-libraries-at-runtime-in-java/15409446#15409446\" for help");
+            t.printStackTrace(System.err);
         }
-        catch(Throwable t) {};
     }
 
     private void attemptLogin(Map<String, String> argMap)
