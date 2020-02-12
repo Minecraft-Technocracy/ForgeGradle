@@ -1,11 +1,3 @@
-import java.io.File;
-import java.lang.reflect.Field;
-import java.net.Proxy;
-import java.util.List;
-import java.util.Map;
-
-import net.minecraftforge.gradle.GradleStartCommon;
-
 import com.google.common.base.Strings;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.Agent;
@@ -13,6 +5,14 @@ import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
+import net.minecraftforge.gradle.GradleStartCommon;
+
+import java.io.File;
+import java.lang.reflect.Field;
+import java.net.Proxy;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class GradleStart extends GradleStartCommon
 {
