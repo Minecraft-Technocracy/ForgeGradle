@@ -66,27 +66,10 @@ public class GradleStart extends GradleStartCommon
 
     private static void hackNatives()
     {
-        String paths = System.getProperty("java.library.path");
         String nativesDir = "@@NATIVESDIR@@";
 
-        if (Strings.isNullOrEmpty(paths))
-            paths = nativesDir;
-        else
-            paths += File.pathSeparator + nativesDir;
-
-        // old hack that was rendered unusable through
+        // old hack was rendered unusable through
         // http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/rev/1d666f78532a/
-//        System.setProperty("java.library.path", paths);
-//
-//        // hack the classloader now.
-//        try
-//        {
-//            final Field sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
-//            sysPathsField.setAccessible(true);
-//            sysPathsField.set(null, null);
-//        }
-//        catch(Throwable t) {};
-
         // replacement hack:
         try {
             final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
@@ -97,14 +80,14 @@ public class GradleStart extends GradleStartCommon
 
             //check if the path to add is already present
             for(String path : paths) {
-                if(path.equals(pathToAdd)) {
+                if(path.equals(nativesDir)) {
                     return;
                 }
             }
 
             //add the new path
             final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
-            newPaths[newPaths.length-1] = pathToAdd;
+            newPaths[newPaths.length-1] = nativesDir;
             usrPathsField.set(null, newPaths);
         } catch (Throwable t) {
             System.err.println("Error hacking the classloader. Loading platform libraries might not work.");
