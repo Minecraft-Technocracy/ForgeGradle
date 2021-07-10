@@ -89,6 +89,7 @@ public class HashStore {
         if(!file.exists()) return this;
         for (String line : FileUtils.readLines(file, StandardCharsets.UTF_8)) {
             String[] split = line.split("=");
+            if(split.length == 1) System.out.println(file.getAbsolutePath());
             oldHashes.put(split[0], split[1]);
         }
         return this;
